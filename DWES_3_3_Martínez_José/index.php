@@ -18,11 +18,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Project/PHP/PHPProject.php to edi
         } catch (Exception $ex) {
             echo "ERROR: " . $ex->getMessage();
         }
-        $error = $conexionBD->connect_errno;
-        if ($error) {
-            echo "ERROR: $error  conectado a la base de datos: $conexionBD->connect_error";
-            exit();
-        }
         ?>
         <h2>Registros de la tabla de Espectáculo que no tienen estrellas: <h2>
                 <?php
@@ -32,6 +27,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Project/PHP/PHPProject.php to edi
                 try {
                     //Realizamos una consulta de aquellos espectaculos que no tengan estrellas
                     $consultaEspectaculosSinEstrellas = $conexionBD->query('SELECT * FROM espectaculo WHERE estrellas IS NULL');
+                    //Realizamos la consulta de actualización de las estrellas por registros
+                    $consultaDeActualizacionEspectaculosEstrellas = $conexionBD->query('UPDATE espectaculo SET estrellas = 1 WHERE estrellas IS NULL');
+                    //Realizamos una consulta que muestra todos los registros actualizados
+                    $consultaTodosLosEspectaculos = $conexionBD->query('SELECT *  FROM espectaculo');
                 } catch (Exception $ex) {
                     echo "ERROR:" . $ex->getMessage();
                 }
@@ -75,12 +74,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Project/PHP/PHPProject.php to edi
                 <?php
                 //Realizamos una transacción para controlar los posibles errores en caso de que la consulta no se ejecute
                 $conexionBD->autocommit(false);
-                //Control de excepciones en caso de error o fallo.
-                try {
-                    $consultaDeActualizacionEspectaculosEstrellas = $conexionBD->query('UPDATE espectaculo SET estrellas = 1 WHERE estrellas IS NULL');
-                } catch (Exception $ex) {
-                    echo "ERROR:" . $ex->getMessage();
-                }
                 $todoCorrecto = $consultaDeActualizacionEspectaculosEstrellas;
                 if ($todoCorrecto) {
                     echo "Los registros han sido actualizados, filas afectadas: $conexionBD->affected_rows";
@@ -94,7 +87,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Project/PHP/PHPProject.php to edi
                 <h2>Generamos una tabla que contenga todos las claves y valores de los campos de la tabla Espectáculo actualizados</h2>
                 <?php
                 //Realizamos una consulta que muestre los registros actualizados de la tabla espectaculo
-                $consultaTodosLosEspectaculos = $conexionBD->query('SELECT *  FROM espectaculo');
                 ?>
                 </br></br>
                 <table border="1">
